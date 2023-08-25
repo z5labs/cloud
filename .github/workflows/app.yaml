@@ -42,9 +42,9 @@ jobs:
       - name: Generate build version
         id: info
         run: |
-          echo "::set-output name=date::$(date +'%Y.%m.%d')"
-          echo "::set-output name=time::$(date +'%H%M%S')"
-          echo "::set-output name=short_commit_id::$(git rev-parse --short HEAD)"
+          echo "date=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
+          echo "time=$(date +'%H%M%S')" >> $GITHUB_OUTPUT
+          echo "short_commit_id=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Build
         working-directory: ./z5cloud
         run: |
