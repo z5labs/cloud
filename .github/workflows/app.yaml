@@ -1,0 +1,48 @@
+name: app
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Test
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Fetch depedencies
+        run: flutter pub get
+      - name: Test
+        run: flutter test
+
+  buildWeb:
+    runs-on: ubuntu-latest
+    name: Build Web
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+      - name: Fetch depedencies
+        run: flutter pub get
+      - name: Generate build version
+        id: info
+        run: |
+          echo "::set-output name=date::$(date +'%Y.%m.%d')"
+          echo "::set-output name=time::$(date +'%H%M%S')"
+          echo "::set-output name=short_commit_id::$(git rev-parse --short HEAD)"
+      - name: Build
+        run: |
+          version="${{ steps.info.outputs.date }}.${{ steps.info.outputs.time }}.${{ steps.info.outputs.short_commit_id }}"
+          flutter build web --build-number=$version
